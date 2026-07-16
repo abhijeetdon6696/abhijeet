@@ -1,0 +1,87 @@
+// @version=6
+// GainzAlgo-V2: Global Inputs Configuration
+// This module contains all user-configurable inputs for the strategy
+
+// ==================== STRATEGY INPUTS ====================
+strategy_title = "GainzAlgo-V2"
+strategy_shorttitle = "GainzAlgo"
+strategy_overlay = true
+strategy_default_qty_value = 100
+strategy_default_qty_type = strategy.percent_of_equity
+
+// ==================== SESSION INPUTS ====================
+group_session = "📅 Session Configuration"
+input_session_enabled = input.bool(true, "Enable Session Filter", group=group_session)
+input_asian_session = input.bool(true, "Asian Session (00:00-09:00 UTC)", group=group_session)
+input_london_session = input.bool(true, "London Session (08:00-17:00 UTC)", group=group_session)
+input_ny_session = input.bool(true, "NY Session (13:00-22:00 UTC)", group=group_session)
+
+// ==================== TREND INPUTS ====================
+group_trend = "📈 Trend Configuration"
+input_ema_fast = input.int(9, "Fast EMA Period", minval=1, group=group_trend)
+input_ema_slow = input.int(21, "Slow EMA Period", minval=1, group=group_trend)
+input_ema_extra_slow = input.int(50, "Extra Slow EMA Period", minval=1, group=group_trend)
+
+// ==================== VOLATILITY INPUTS ====================
+group_volatility = "📊 Volatility & Strength"
+input_atr_period = input.int(14, "ATR Period", minval=1, group=group_volatility)
+input_atr_multiple = input.float(2.0, "ATR Multiple for Levels", minval=0.1, step=0.1, group=group_volatility)
+input_rsi_period = input.int(14, "RSI Period", minval=1, group=group_volatility)
+input_rsi_overbought = input.int(70, "RSI Overbought", minval=50, maxval=100, group=group_volatility)
+input_rsi_oversold = input.int(30, "RSI Oversold", minval=0, maxval=50, group=group_volatility)
+
+// ==================== SMART MONEY INPUTS ====================
+group_smart = "💰 Smart Money Configuration"
+input_swing_period = input.int(10, "Swing Detection Period", minval=5, group=group_smart)
+input_bos_lookback = input.int(20, "Break of Structure Lookback", minval=5, group=group_smart)
+input_liquidity_range = input.float(0.5, "Liquidity Range %", minval=0.1, group=group_smart)
+
+// ==================== INSTITUTIONAL INPUTS ====================
+group_inst = "🏦 Institutional Configuration"
+input_ob_period = input.int(5, "Order Block Period", minval=2, group=group_inst)
+input_fvg_min_size = input.float(0.1, "FVG Minimum Size %", minval=0.01, group=group_inst)
+input_imbalance_sensitivity = input.float(1.0, "Imbalance Sensitivity", minval=0.1, group=group_inst)
+
+// ==================== AI INPUTS ====================
+group_ai = "🤖 AI Engine Configuration"
+input_ai_enabled = input.bool(true, "Enable AI Scoring", group=group_ai)
+input_ai_min_score = input.float(65.0, "Minimum AI Score", minval=0, maxval=100, group=group_ai)
+input_ai_confidence = input.float(0.75, "AI Confidence Level", minval=0, maxval=1, step=0.05, group=group_ai)
+
+// ==================== RISK MANAGEMENT INPUTS ====================
+group_risk = "🎯 Risk Management"
+input_risk_per_trade = input.float(2.0, "Risk Per Trade %", minval=0.1, maxval=10, step=0.1, group=group_risk)
+input_max_drawdown = input.float(10.0, "Max Allowed Drawdown %", minval=1, maxval=50, group=group_risk)
+input_use_fixed_sl = input.bool(true, "Use Fixed Stop Loss", group=group_risk)
+input_fixed_sl_pips = input.int(50, "Fixed SL (Pips)", minval=5, group=group_risk)
+input_use_trailing_sl = input.bool(true, "Use Trailing Stop Loss", group=group_risk)
+input_trailing_distance = input.int(30, "Trailing Distance (Pips)", minval=5, group=group_risk)
+
+// ==================== TAKE PROFIT INPUTS ====================
+group_tp = "💎 Take Profit Configuration"
+input_tp1_percent = input.float(1.0, "TP1 Risk/Reward Ratio", minval=0.5, step=0.1, group=group_tp)
+input_tp2_percent = input.float(2.0, "TP2 Risk/Reward Ratio", minval=0.5, step=0.1, group=group_tp)
+input_tp3_percent = input.float(3.0, "TP3 Risk/Reward Ratio", minval=0.5, step=0.1, group=group_tp)
+input_scale_out = input.bool(true, "Enable Scale Out Strategy", group=group_tp)
+
+// ==================== FILTERS INPUTS ====================
+group_filters = "🔍 Trade Filters"
+input_min_volume_percent = input.float(100.0, "Minimum Volume %", minval=50, group=group_filters)
+input_trend_aligned = input.bool(true, "Require Trend Alignment", group=group_filters)
+input_news_filter = input.bool(false, "Enable News Filter", group=group_filters)
+input_mtf_enabled = input.bool(true, "Enable Multi-Timeframe Filter", group=group_filters)
+
+// ==================== ALERT INPUTS ====================
+group_alerts = "🔔 Alerts Configuration"
+input_buy_alert = input.bool(true, "Send Buy Alerts", group=group_alerts)
+input_sell_alert = input.bool(true, "Send Sell Alerts", group=group_alerts)
+input_webhook_url = input.string("", "Webhook URL (Optional)", group=group_alerts)
+input_use_notifications = input.bool(true, "Use Desktop Notifications", group=group_alerts)
+
+// ==================== DISPLAY INPUTS ====================
+group_display = "👁️ Display Settings"
+input_show_indicators = input.bool(true, "Show Indicators", group=group_display)
+input_show_structure = input.bool(true, "Show Smart Money Structure", group=group_display)
+input_show_orders = input.bool(true, "Show Order Blocks", group=group_display)
+input_show_dashboard = input.bool(true, "Show Dashboard", group=group_display)
+input_dashboard_position = input.string("top-right", "Dashboard Position", options=["top-left", "top-center", "top-right", "middle-left", "middle-center", "middle-right", "bottom-left", "bottom-center", "bottom-right"], group=group_display)
