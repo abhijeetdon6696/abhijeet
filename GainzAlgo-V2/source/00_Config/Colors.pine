@@ -1,0 +1,87 @@
+// @version=6
+// GainzAlgo-V2: Color Scheme Configuration
+// Centralized color management for all UI elements
+
+// ==================== BULL COLORS ====================
+color_bull_primary = color.new(#089981, 0)
+color_bull_light = color.new(#1DB883, 20)
+color_bull_dark = color.new(#0B7D5C, 10)
+color_bull_soft = color.new(#089981, 50)
+
+// ==================== BEAR COLORS ====================
+color_bear_primary = color.new(#F23645, 0)
+color_bear_light = color.new(#FF5A68, 20)
+color_bear_dark = color.new(#C81A2D, 10)
+color_bear_soft = color.new(#F23645, 50)
+
+// ==================== NEUTRAL COLORS ====================
+color_neutral_primary = color.new(#F5CD47, 0)
+color_neutral_light = color.new(#FFE66D, 20)
+color_neutral_soft = color.new(#F5CD47, 50)
+
+// ==================== ACCENT COLORS ====================
+color_accent_blue = color.new(#1E88E5, 0)
+color_accent_purple = color.new(#9C27B0, 0)
+color_accent_orange = color.new(#FF9800, 0)
+color_accent_cyan = color.new(#00BCD4, 0)
+
+// ==================== INDICATOR COLORS ====================
+color_ema_fast = color.new(#FF6B6B, 0)
+color_ema_slow = color.new(#4ECDC4, 0)
+color_ema_extra_slow = color.new(#95E1D3, 0)
+
+color_supertrend_up = color_bull_primary
+color_supertrend_down = color_bear_primary
+
+color_rsi_line = color.new(#1E88E5, 0)
+color_rsi_overbought = color_bear_light
+color_rsi_oversold = color_bull_light
+
+color_macd_line = color.new(#1E88E5, 0)
+color_macd_signal = color.new(#FF6B6B, 0)
+color_macd_histogram_positive = color.new(#089981, 30)
+color_macd_histogram_negative = color.new(#F23645, 30)
+
+color_volume_bull = color.new(#089981, 60)
+color_volume_bear = color.new(#F23645, 60)
+
+// ==================== SMART MONEY COLORS ====================
+color_bos_bull = color.new(#089981, 30)
+color_bos_bear = color.new(#F23645, 30)
+color_choch_strong = color.new(#9C27B0, 20)
+color_hh_ll = color.new(#FF9800, 30)
+color_liquidity_zone = color.new(#1E88E5, 40)
+
+// ==================== INSTITUTIONAL COLORS ====================
+color_ob_bull = color.new(#089981, 15)
+color_ob_bear = color.new(#F23645, 15)
+color_fvg_bull = color.new(#00BCD4, 25)
+color_fvg_bear = color.new(#FF5252, 25)
+color_imbalance = color.new(#F5CD47, 20)
+color_breaker_block = color.new(#CE93D8, 15)
+
+// ==================== RISK MANAGEMENT COLORS ====================
+color_stop_loss = color.new(#F23645, 0)
+color_take_profit = color.new(#089981, 0)
+color_break_even = color.new(#F5CD47, 0)
+color_trailing_stop = color.new(#FF9800, 0)
+
+// ==================== AI COLORS ====================
+color_ai_signal_strong = color.new(#4CAF50, 0)
+color_ai_signal_moderate = color.new(#2196F3, 0)
+color_ai_signal_weak = color.new(#FFC107, 0)
+color_ai_signal_invalid = color.new(#F44336, 0)
+
+// ==================== BACKGROUND COLORS ====================
+color_background_primary = color.new(#131722, 0)
+color_background_secondary = color.new(#1E222D, 0)
+color_background_tertiary = color.new(#262D3D, 0)
+
+// ==================== TEXT COLORS ====================
+color_text_primary = color.new(#F5F5F5, 0)
+color_text_secondary = color.new(#B8B8B8, 0)
+color_text_tertiary = color.new(#808080, 0)
+
+// ==================== BORDER COLORS ====================
+color_border_primary = color.new(#404040, 0)
+color_border_secondary = color.new(#303030, 0)
