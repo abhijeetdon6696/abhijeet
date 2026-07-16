@@ -1,0 +1,105 @@
+// @version=6
+// GainzAlgo-V2: Global Constants
+// Fixed values and enumerations used throughout the strategy
+
+// ==================== MARKET CONSTANTS ====================
+PIPS_MULTIPLIER = 10000  // For standard currency pairs
+MIN_TRADES_FOR_STATS = 10
+MAX_CONCURRENT_ORDERS = 3
+
+// ==================== TIME CONSTANTS (in minutes) ====================
+SESSION_ASIAN_START = 0
+SESSION_ASIAN_END = 540      // 09:00 UTC
+SESSION_LONDON_START = 480   // 08:00 UTC
+SESSION_LONDON_END = 1020    // 17:00 UTC
+SESSION_NY_START = 780       // 13:00 UTC
+SESSION_NY_END = 1320        // 22:00 UTC
+
+// ==================== TREND STATES ====================
+TREND_UPTREND = 1
+TREND_DOWNTREND = -1
+TREND_SIDEWAYS = 0
+
+// ==================== SIGNAL TYPES ====================
+SIGNAL_BUY = 1
+SIGNAL_SELL = -1
+SIGNAL_NEUTRAL = 0
+
+// ==================== SMART MONEY STATES ====================
+STRUCTURE_MAKING_HH = 1      // Higher High
+STRUCTURE_MAKING_HL = 2      // Higher Low
+STRUCTURE_MAKING_LL = -1     // Lower Low
+STRUCTURE_MAKING_LH = -2     // Lower High
+
+BOS_UP = 1                    // Break of Structure Up
+BOS_DOWN = -1                 // Break of Structure Down
+CHOCH_UP = 2                  // Change of Character Up
+CHOCH_DOWN = -2               // Change of Character Down
+
+// ==================== INSTITUTIONAL LEVELS ====================
+OB_MITIGATED_PERCENT = 0.5    // OB needs 50% retracement to be considered mitigated
+FVG_MIN_SIZE_PERCENT = 0.1    // Minimum 0.1% gap
+IMBALANCE_MIN_RATIO = 1.5     // Volume imbalance minimum ratio
+
+// ==================== AI SCORING ====================
+AI_SCORE_EXCELLENT = 85.0
+AI_SCORE_VERY_GOOD = 75.0
+AI_SCORE_GOOD = 65.0
+AI_SCORE_FAIR = 50.0
+AI_SCORE_POOR = 35.0
+
+AI_CONFIDENCE_HIGH = 0.85
+AI_CONFIDENCE_MEDIUM = 0.65
+AI_CONFIDENCE_LOW = 0.45
+
+// ==================== RISK MANAGEMENT ====================
+DEFAULT_RISK_REWARD_TP1 = 1.0
+DEFAULT_RISK_REWARD_TP2 = 2.0
+DEFAULT_RISK_REWARD_TP3 = 3.0
+
+POSITION_SIZE_FULL = 1.0
+POSITION_SIZE_HALF = 0.5
+POSITION_SIZE_QUARTER = 0.25
+POSITION_SIZE_EIGHTH = 0.125
+
+MAX_LOSS_PER_SESSION = 5.0    // Max loss % per session
+MAX_CONSECUTIVE_LOSSES = 3    // Max consecutive losing trades
+
+// ==================== FILTER THRESHOLDS ====================
+MIN_VOLUME_THRESHOLD = 1.0    // Relative to average
+MIN_PRICE_CHANGE = 0.01       // Minimum price movement %
+MIN_CANDLE_SIZE = 0.5         // Minimum candle size in pips
+
+// ==================== NOTIFICATION STRINGS ====================
+MSG_BUY_SIGNAL = "🟢 BUY Signal | "
+MSG_SELL_SIGNAL = "🔴 SELL Signal | "
+MSG_TP1_HIT = "💎 TP1 Hit"
+MSG_TP2_HIT = "💎 TP2 Hit"
+MSG_TP3_HIT = "💎 TP3 Hit"
+MSG_SL_HIT = "🛑 Stop Loss Hit"
+MSG_BE_SET = "📍 Break Even Set"
+
+// ==================== WEBHOOK EVENTS ====================
+WEBHOOK_BUY = "BUY"
+WEBHOOK_SELL = "SELL"
+WEBHOOK_CLOSE = "CLOSE"
+WEBHOOK_TP = "TAKE_PROFIT"
+WEBHOOK_SL = "STOP_LOSS"
+
+// ==================== UI SETTINGS ====================
+DASHBOARD_WIDTH = 350
+DASHBOARD_HEIGHT = 400
+TABLE_ROW_HEIGHT = 25
+LABEL_OFFSET_Y = 30
+LINE_WIDTH_THICK = 3
+LINE_WIDTH_NORMAL = 2
+LINE_WIDTH_THIN = 1
+
+// ==================== ARRAY LIMITS ====================
+MAX_LABELS = 100
+MAX_LINES = 100
+MAX_BOXES = 100
+
+// ==================== PERFORMANCE METRICS ====================
+STATS_UPDATE_FREQUENCY = 5    // Update stats every N bars
+BACKTEST_MIN_TRADES = 20      // Minimum trades for backtest validity
