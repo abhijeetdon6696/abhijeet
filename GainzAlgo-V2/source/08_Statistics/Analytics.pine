@@ -1,0 +1,73 @@
+// @version=6
+// GainzAlgo-V2: Statistics & Analytics
+// Performance tracking and metrics
+
+type TradeStats
+    total_trades : int
+    winning_trades : int
+    losing_trades : int
+    win_rate : float
+    avg_win : float
+    avg_loss : float
+    profit_factor : float
+    max_drawdown : float
+    consecutive_wins : int
+    consecutive_losses : int
+
+// ==================== WIN RATE ====================
+f_calculate_win_rate(wins, total) =>
+    if total == 0
+        0.0
+    else
+        (wins / total) * 100
+
+// ==================== PROFIT FACTOR ====================
+f_calculate_profit_factor(gross_profit, gross_loss) =>
+    if gross_loss == 0
+        1.0
+    else
+        gross_profit / gross_loss
+
+// ==================== DRAWDOWN ====================
+f_calculate_max_drawdown(peak_equity, trough_equity) =>
+    if peak_equity == 0
+        0.0
+    else
+        ((peak_equity - trough_equity) / peak_equity) * 100
+
+// ==================== EXPECTANCY ====================
+f_calculate_expectancy(win_rate, avg_win, avg_loss) =>
+    (win_rate * avg_win) - ((1 - win_rate) * avg_loss)
+
+// ==================== RECOVERY FACTOR ====================
+f_calculate_recovery_factor(net_profit, max_drawdown_amount) =>
+    if max_drawdown_amount == 0
+        1.0
+    else
+        net_profit / max_drawdown_amount
+
+// ==================== CONSECUTIVE WINS/LOSSES ====================
+f_track_consecutive_wins(trade_result_current, trade_result_prev, consecutive_prev) =>
+    if trade_result_current > 0
+        if trade_result_prev > 0
+            consecutive_prev + 1
+        else
+            1
+    else
+        0
+
+f_track_consecutive_losses(trade_result_current, trade_result_prev, consecutive_prev) =>
+    if trade_result_current < 0
+        if trade_result_prev < 0
+            consecutive_prev + 1
+        else
+            1
+    else
+        0
+
+// ==================== STATS TEXT ====================
+f_format_stats_text(stats : TradeStats) =>
+    "Trades: " + str.tostring(stats.total_trades) + " | " +
+    "Win Rate: " + str.tostring(stats.win_rate, "#.##") + "% | " +
+    "Profit Factor: " + str.tostring(stats.profit_factor, "#.##") + " | " +
+    "Max DD: " + str.tostring(stats.max_drawdown, "#.##") + "%"

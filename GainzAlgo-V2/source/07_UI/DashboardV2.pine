@@ -1,0 +1,58 @@
+// @version=6
+// GainzAlgo-V2: Dashboard UI Components
+// Advanced information display
+
+// ==================== DASHBOARD TABLE ====================
+f_create_dashboard_table(title, position) =>
+    table_position = switch position
+        "top-left" => position.top_left
+        "top-center" => position.top_center
+        "top-right" => position.top_right
+        "middle-left" => position.middle_left
+        "middle-center" => position.middle_center
+        "middle-right" => position.middle_right
+        "bottom-left" => position.bottom_left
+        "bottom-center" => position.bottom_center
+        "bottom-right" => position.bottom_right
+        => position.top_right
+    
+    table.new(table_position, 3, 8, border_color=color_border_primary, frame_color=color_border_primary)
+
+// ==================== DASHBOARD CELL ====================
+f_set_dashboard_cell(tbl, row, col, text, bg_color, text_color) =>
+    table.cell(tbl, col, row, text, bgcolor=bg_color, text_color=text_color, text_font_family=font.monospace)
+
+// ==================== INFO LABELS ====================
+f_create_info_label(x, y, text, bg_color, text_color, size) =>
+    label.new(x, y, text=text, color=bg_color, textcolor=text_color, style=label.style_label_down, size=size)
+
+// ==================== TREND INDICATOR ====================
+f_trend_indicator_text(trend_direction, trend_strength) =>
+    if trend_direction == 1
+        "📈 UPTREND (" + str.tostring(trend_strength, "#.##") + "x)"
+    else if trend_direction == -1
+        "📉 DOWNTREND (" + str.tostring(trend_strength, "#.##") + "x)"
+    else
+        "➡️ SIDEWAYS"
+
+// ==================== SESSION INDICATOR ====================
+f_session_text() =>
+    if f_is_london_ny_overlap()
+        "🌍 LONDON-NY OVERLAP"
+    else if f_is_london_session()
+        "🇬🇧 LONDON SESSION"
+    else if f_is_ny_session()
+        "🗽 NY SESSION"
+    else if f_is_asian_session()
+        "🌏 ASIAN SESSION"
+    else
+        "❓ UNKNOWN"
+
+// ==================== SIGNAL BADGE ====================
+f_signal_badge(signal_type, ai_score) =>
+    if signal_type == 1
+        "🟢 BUY (" + str.tostring(ai_score, "#.##") + ")"
+    else if signal_type == -1
+        "🔴 SELL (" + str.tostring(ai_score, "#.##") + ")"
+    else
+        "⚫ NEUTRAL (" + str.tostring(ai_score, "#.##") + ")"

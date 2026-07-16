@@ -1,0 +1,57 @@
+// @version=6
+// GainzAlgo-V2: Session Filter
+// Trading session management
+
+// ==================== SESSION TIME HELPERS ====================
+f_get_current_session_minutes() =>
+    hour_minutes = hour * 60
+    minute_value = minute
+    hour_minutes + minute_value
+
+f_is_asian_session() =>
+    session_minutes = f_get_current_session_minutes()
+    session_minutes >= 0 and session_minutes < 540  // 0:00 - 9:00 UTC
+
+f_is_london_session() =>
+    session_minutes = f_get_current_session_minutes()
+    session_minutes >= 480 and session_minutes < 1020  // 8:00 - 17:00 UTC
+
+f_is_ny_session() =>
+    session_minutes = f_get_current_session_minutes()
+    session_minutes >= 780 and session_minutes < 1320  // 13:00 - 22:00 UTC
+
+f_is_london_ny_overlap() =>
+    session_minutes = f_get_current_session_minutes()
+    session_minutes >= 780 and session_minutes < 1020  // 13:00 - 17:00 UTC
+
+// ==================== SESSION FILTER ====================
+f_session_filter_enabled() =>
+    (f_is_asian_session() and input_asian_session) or
+    (f_is_london_session() and input_london_session) or
+    (f_is_ny_session() and input_ny_session)
+
+f_best_trading_session() =>
+    f_is_london_ny_overlap()  // Highest volatility overlap
+
+// ==================== SESSION VOLATILITY ====================
+f_session_expected_volatility(session_type) =>
+    if session_type == "LONDON_NY"
+        3.0  // Highest
+    else if session_type == "LONDON" or session_type == "NY"
+        2.0  // Medium-High
+    else if session_type == "ASIAN"
+        1.0  // Lower
+    else
+        1.5  // Default
+
+// ==================== AVOID TIMES ====================
+f_is_market_open() =>
+    dayofweek != dayofweek.sunday and dayofweek != dayofweek.saturday
+
+f_avoid_news_time() =>
+    // Avoid major news times
+    session_minutes = f_get_current_session_minutes()
+    // US NFP: First Friday 13:30 UTC
+    // ECB: Thursday 12:45 UTC
+    // BoE: Thursday 12:00 UTC
+    true

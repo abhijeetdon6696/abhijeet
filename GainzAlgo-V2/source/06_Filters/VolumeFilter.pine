@@ -1,0 +1,47 @@
+// @version=6
+// GainzAlgo-V2: Volume Filter
+// Volume confirmation analysis
+
+// ==================== VOLUME BASELINE ====================
+f_avg_volume(period) =>
+    ta.sma(volume, period)
+
+f_volume_ratio(current_vol, avg_vol) =>
+    if avg_vol == 0
+        1.0
+    else
+        current_vol / avg_vol
+
+// ==================== VOLUME CONFIRMATION ====================
+f_volume_supports_move(current_vol, avg_vol, threshold_multiplier) =>
+    ratio = f_volume_ratio(current_vol, avg_vol)
+    ratio >= threshold_multiplier
+
+f_strong_volume_up(volume_current, volume_prev, volume_avg) =>
+    ratio = f_volume_ratio(volume_current, volume_avg)
+    ratio > 1.2 and volume_current > volume_prev
+
+f_strong_volume_down(volume_current, volume_prev, volume_avg) =>
+    ratio = f_volume_ratio(volume_current, volume_avg)
+    ratio > 1.2 and volume_current > volume_prev
+
+// ==================== VOLUME DIVERGENCE ====================
+f_volume_divergence_up(price_higher, volume_lower) =>
+    price_higher and volume_lower  // Price up, volume down = weak
+
+f_volume_divergence_down(price_lower, volume_lower) =>
+    price_lower and volume_lower  // Price down, volume down = weak
+
+// ==================== VOLUME CLUSTER ====================
+f_volume_cluster(current_vol, prev_vol, avg_vol) =>
+    cluster_ratio = current_vol / avg_vol
+    if cluster_ratio > 2.0
+        "VERY_HIGH"
+    else if cluster_ratio > 1.5
+        "HIGH"
+    else if cluster_ratio > 1.0
+        "NORMAL"
+    else if cluster_ratio > 0.5
+        "LOW"
+    else
+        "VERY_LOW"

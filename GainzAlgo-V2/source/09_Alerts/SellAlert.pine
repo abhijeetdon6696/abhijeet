@@ -1,0 +1,44 @@
+// @version=6
+// GainzAlgo-V2: Sell Alert System
+// Exit signal generation and notification
+
+// ==================== SELL ALERT GENERATION ====================
+f_generate_sell_alert(signal_strength, entry_price, current_price, stop_loss, take_profit) =>
+    profit_pips = (current_price - entry_price) / syminfo.mintick
+    profit_pct = (profit_pips / (entry_price / syminfo.mintick)) * 100
+    
+    alert_text = MSG_SELL_SIGNAL +
+        "Exit: " + str.tostring(current_price, "#.#####") + " | " +
+        "Profit: " + str.tostring(profit_pct, "#.##") + "% | " +
+        "Signal: " + str.tostring(signal_strength, "#.##")
+    alert_text
+
+// ==================== SELL CONFIRMATION ====================
+f_sell_signal_confirmed(trend_down, momentum_down, ai_score, min_score) =>
+    trend_down and momentum_down and ai_score <= (100 - min_score)
+
+// ==================== SELL SETUP ====================
+f_sell_setup_conditions(price_below_ema, ema_aligned, bos_confirmed, ob_present) =>
+    price_below_ema and ema_aligned and (bos_confirmed or ob_present)
+
+// ==================== SELL ALERT SEVERITY ====================
+f_sell_alert_level(ai_score) =>
+    inverted_score = 100 - ai_score
+    if inverted_score >= 85
+        "🟢🟢🟢 STRONG SELL"
+    else if inverted_score >= 75
+        "🟢🟢 SELL"
+    else if inverted_score >= 65
+        "🟢 MODERATE SELL"
+    else
+        "⚪ WEAK SELL"
+
+// ==================== SEND ALERT ====================
+f_send_sell_alert(condition, alert_msg, use_webhook, webhook_url) =>
+    if condition
+        if input_use_notifications
+            alert(alert_msg)
+        
+        if use_webhook and webhook_url != ""
+            request.post(webhook_url, headers=["Content-Type: application/json"], 
+                body='{"type": "SELL", "message": "' + alert_msg + '"}')

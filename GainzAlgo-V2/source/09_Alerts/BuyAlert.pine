@@ -1,0 +1,41 @@
+// @version=6
+// GainzAlgo-V2: Buy Alert System
+// Entry signal generation and notification
+
+// ==================== BUY ALERT GENERATION ====================
+f_generate_buy_alert(signal_strength, entry_price, stop_loss, take_profit) =>
+    alert_text = MSG_BUY_SIGNAL +
+        "Entry: " + str.tostring(entry_price, "#.#####") + " | " +
+        "SL: " + str.tostring(stop_loss, "#.#####") + " | " +
+        "TP: " + str.tostring(take_profit, "#.#####") + " | " +
+        "Signal: " + str.tostring(signal_strength, "#.##")
+    alert_text
+
+// ==================== BUY CONFIRMATION ====================
+f_buy_signal_confirmed(trend_up, momentum_up, ai_score, min_score) =>
+    trend_up and momentum_up and ai_score >= min_score
+
+// ==================== BUY SETUP ====================
+f_buy_setup_conditions(price_above_ema, ema_aligned, bos_confirmed, ob_present) =>
+    price_above_ema and ema_aligned and (bos_confirmed or ob_present)
+
+// ==================== BUY ALERT SEVERITY ====================
+f_buy_alert_level(ai_score) =>
+    if ai_score >= 85
+        "🔴🔴🔴 STRONG BUY"
+    else if ai_score >= 75
+        "🔴🔴 BUY"
+    else if ai_score >= 65
+        "🔴 MODERATE BUY"
+    else
+        "⚪ WEAK BUY"
+
+// ==================== SEND ALERT ====================
+f_send_buy_alert(condition, alert_msg, use_webhook, webhook_url) =>
+    if condition
+        if input_use_notifications
+            alert(alert_msg)
+        
+        if use_webhook and webhook_url != ""
+            request.post(webhook_url, headers=["Content-Type: application/json"], 
+                body='{"type": "BUY", "message": "' + alert_msg + '"}')
