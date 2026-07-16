@@ -1,0 +1,142 @@
+// @version=6
+// GainzAlgo-V2: Theme Management
+// Centralized theme configuration for consistent UI/UX
+
+// ==================== THEME TYPE ====================
+enum ThemeType
+    DARK
+    LIGHT
+    PROFESSIONAL
+    COLORFUL
+    MINIMAL
+
+// ==================== ACTIVE THEME ====================
+var ThemeType active_theme = ThemeType.DARK
+
+// ==================== THEME STRUCTURE ====================
+type Theme
+    // Background colors
+    bg_primary   : color
+    bg_secondary : color
+    bg_tertiary  : color
+    
+    // Text colors
+    text_primary   : color
+    text_secondary : color
+    text_tertiary  : color
+    
+    // Indicator colors
+    bull_color   : color
+    bear_color   : color
+    neutral_color : color
+    
+    // Chart elements
+    border_color : color
+    grid_color   : color
+
+// ==================== DARK THEME ====================
+f_get_dark_theme() =>
+    Theme.new(
+     bg_primary   = color.new(#131722, 0),
+     bg_secondary = color.new(#1E222D, 0),
+     bg_tertiary  = color.new(#262D3D, 0),
+     text_primary   = color.new(#F5F5F5, 0),
+     text_secondary = color.new(#B8B8B8, 0),
+     text_tertiary  = color.new(#808080, 0),
+     bull_color   = color.new(#089981, 0),
+     bear_color   = color.new(#F23645, 0),
+     neutral_color = color.new(#F5CD47, 0),
+     border_color = color.new(#404040, 0),
+     grid_color   = color.new(#2A2E39, 0)
+    )
+
+// ==================== LIGHT THEME ====================
+f_get_light_theme() =>
+    Theme.new(
+     bg_primary   = color.new(#FFFFFF, 0),
+     bg_secondary = color.new(#F8F9FA, 0),
+     bg_tertiary  = color.new(#F0F1F3, 0),
+     text_primary   = color.new(#1F2937, 0),
+     text_secondary = color.new(#6B7280, 0),
+     text_tertiary  = color.new(#9CA3AF, 0),
+     bull_color   = color.new(#059669, 0),
+     bear_color   = color.new(#DC2626, 0),
+     neutral_color = color.new(#D97706, 0),
+     border_color = color.new(#E5E7EB, 0),
+     grid_color   = color.new(#F3F4F6, 0)
+    )
+
+// ==================== PROFESSIONAL THEME ====================
+f_get_professional_theme() =>
+    Theme.new(
+     bg_primary   = color.new(#0F1419, 0),
+     bg_secondary = color.new(#17181F, 0),
+     bg_tertiary  = color.new(#1F2126, 0),
+     text_primary   = color.new(#FFFFFF, 0),
+     text_secondary = color.new(#A0A0A0, 0),
+     text_tertiary  = color.new(#707070, 0),
+     bull_color   = color.new(#26A69A, 0),
+     bear_color   = color.new(#EF5350, 0),
+     neutral_color = color.new(#FFA726, 0),
+     border_color = color.new(#37474F, 0),
+     grid_color   = color.new(#263238, 0)
+    )
+
+// ==================== COLORFUL THEME ====================
+f_get_colorful_theme() =>
+    Theme.new(
+     bg_primary   = color.new(#1A1A2E, 0),
+     bg_secondary = color.new(#16213E, 0),
+     bg_tertiary  = color.new(#0F3460, 0),
+     text_primary   = color.new(#EAEAEA, 0),
+     text_secondary = color.new(#16BECC, 0),
+     text_tertiary  = color.new(#E94560, 0),
+     bull_color   = color.new(#00FF88, 0),
+     bear_color   = color.new(#FF0055, 0),
+     neutral_color = color.new(#00D4FF, 0),
+     border_color = color.new(#16BECC, 0),
+     grid_color   = color.new(#0F3460, 0)
+    )
+
+// ==================== MINIMAL THEME ====================
+f_get_minimal_theme() =>
+    Theme.new(
+     bg_primary   = color.new(#FAFAFA, 0),
+     bg_secondary = color.new(#F5F5F5, 0),
+     bg_tertiary  = color.new(#EFEFEF, 0),
+     text_primary   = color.new(#212121, 0),
+     text_secondary = color.new(#757575, 0),
+     text_tertiary  = color.new(#BDBDBD, 0),
+     bull_color   = color.new(#4CAF50, 0),
+     bear_color   = color.new(#F44336, 0),
+     neutral_color = color.new(#FFC107, 0),
+     border_color = color.new(#E0E0E0, 0),
+     grid_color   = color.new(#EEEEEE, 0)
+    )
+
+// ==================== GET ACTIVE THEME ====================
+f_get_active_theme() =>
+    switch active_theme
+        ThemeType.DARK => f_get_dark_theme()
+        ThemeType.LIGHT => f_get_light_theme()
+        ThemeType.PROFESSIONAL => f_get_professional_theme()
+        ThemeType.COLORFUL => f_get_colorful_theme()
+        ThemeType.MINIMAL => f_get_minimal_theme()
+        => f_get_dark_theme()
+
+// ==================== THEME UTILITIES ====================
+f_set_theme(theme_type : ThemeType) =>
+    active_theme := theme_type
+
+f_get_bull_color(theme : Theme) =>
+    theme.bull_color
+
+f_get_bear_color(theme : Theme) =>
+    theme.bear_color
+
+f_get_text_color(theme : Theme, priority : string) =>
+    switch priority
+        "primary" => theme.text_primary
+        "secondary" => theme.text_secondary
+        "tertiary" => theme.text_tertiary
+        => theme.text_primary
