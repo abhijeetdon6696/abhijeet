@@ -1,0 +1,40 @@
+// @version=6
+// GainzAlgo-V2: Trailing Stop Loss
+// Dynamic trailing stop management
+
+// ==================== TRAILING STOP CALCULATION ====================
+f_trailing_stop_long(current_high, current_stop, trail_distance) =>
+    new_stop = current_high - trail_distance
+    math.max(new_stop, current_stop)  // Stop can only move up
+
+f_trailing_stop_short(current_low, current_stop, trail_distance) =>
+    new_stop = current_low + trail_distance
+    math.min(new_stop, current_stop)  // Stop can only move down
+
+// ==================== ATR TRAILING STOP ====================
+f_atr_trailing_stop_long(current_high, current_stop, atr_val, multiplier) =>
+    trail = atr_val * multiplier
+    new_stop = current_high - trail
+    math.max(new_stop, current_stop)
+
+f_atr_trailing_stop_short(current_low, current_stop, atr_val, multiplier) =>
+    trail = atr_val * multiplier
+    new_stop = current_low + trail
+    math.min(new_stop, current_stop)
+
+// ==================== TRAILING STOP MODES ====================
+f_trailing_stop_mode(mode_type, current_price, entry_price, high, low, trail_distance) =>
+    if mode_type == "FIXED"
+        if current_price > entry_price
+            current_price - trail_distance * syminfo.mintick
+        else
+            entry_price - trail_distance * syminfo.mintick
+    else if mode_type == "PERCENTAGE"
+        entry_price * (1.0 - trail_distance / 100)
+    else
+        entry_price
+
+// ==================== PARTIAL TRAILING STOP ====================
+f_partial_trailing_stop(locked_profit, total_tp, trail_percent) =>
+    trail_amount = locked_profit * (trail_percent / 100)
+    locked_profit - trail_amount

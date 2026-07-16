@@ -1,0 +1,37 @@
+// @version=6
+// GainzAlgo-V2: Break Even Management
+// Automatic break-even position adjustment
+
+// ==================== BREAK EVEN CALCULATION ====================
+f_calculate_break_even(entry_price) =>
+    entry_price
+
+// ==================== BREAK EVEN ACTIVATION ====================
+f_be_activation_pips(atr_val, multiplier) =>
+    atr_val * multiplier / syminfo.mintick
+
+f_be_price_reached(current_price, entry_price, direction, activation_pips) =>
+    if direction == 1  // Long
+        current_price >= entry_price + activation_pips * syminfo.mintick
+    else  // Short
+        current_price <= entry_price - activation_pips * syminfo.mintick
+
+// ==================== BREAK EVEN SET ====================
+f_set_break_even(current_stop_loss, entry_price, buffer_pips) =>
+    buffer = buffer_pips * syminfo.mintick
+    entry_price + buffer
+
+// ==================== TRAILING BREAK EVEN ====================
+f_trailing_break_even(entry_price, current_price, direction, trail_distance) =>
+    trail = trail_distance * syminfo.mintick
+    if direction == 1  // Long
+        math.max(entry_price, current_price - trail)
+    else  // Short
+        math.min(entry_price, current_price + trail)
+
+// ==================== SECURE PROFITS ====================
+f_secure_at_resistance(entry_price, current_price, resistance, direction) =>
+    if direction == 1
+        current_price > resistance
+    else
+        current_price < resistance

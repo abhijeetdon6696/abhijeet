@@ -1,0 +1,37 @@
+// @version=6
+// GainzAlgo-V2: Liquidity Levels
+// Smart money liquidity zone identification
+
+// ==================== LIQUIDITY DETECTION ====================
+f_detect_liquidity_buy(high, high_prev, volume, volume_avg, range_percent) =>
+    // High volume at support levels
+    vol_spike = volume > volume_avg * 1.5
+    price_level_tested = high == high_prev
+    vol_spike and price_level_tested
+
+f_detect_liquidity_sell(low, low_prev, volume, volume_avg, range_percent) =>
+    // High volume at resistance levels
+    vol_spike = volume > volume_avg * 1.5
+    price_level_tested = low == low_prev
+    vol_spike and price_level_tested
+
+// ==================== LIQUIDITY ZONES ====================
+f_liquidity_zone_size(high, low) =>
+    high - low
+
+f_liquidity_zone_strength(liquidity_size, atr_val) =>
+    liquidity_size / atr_val
+
+// ==================== LIQUIDITY SWEEP ====================
+f_liquidity_sweep_up(high_prev, high, low_vol_zone) =>
+    high > high_prev and low_vol_zone
+
+f_liquidity_sweep_down(low_prev, low, low_vol_zone) =>
+    low < low_prev and low_vol_zone
+
+// ==================== LIQUIDITY GRAB ====================
+f_liquidity_grab_high(close, high_level, range) =>
+    close > high_level and close <= high_level + range * syminfo.mintick
+
+f_liquidity_grab_low(close, low_level, range) =>
+    close < low_level and close >= low_level - range * syminfo.mintick

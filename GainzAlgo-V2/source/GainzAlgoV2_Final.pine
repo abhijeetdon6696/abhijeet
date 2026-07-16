@@ -1,0 +1,147 @@
+// @version=6
+// GainzAlgo-V2: Main Strategy Implementation
+// Complete GainzAlgo-V2 Trading Strategy - Pine Script v6
+
+indicator(title="GainzAlgo-V2", shorttitle="GainzAlgo", overlay=true, max_lines_count=500, max_labels_count=500)
+
+// ==================== INITIALIZATION ====================
+var initial_capital = 10000.0
+var current_equity = initial_capital
+var trade_log = array.new<string>()
+
+var int consecutive_wins = 0
+var int consecutive_losses = 0
+var float peak_equity = initial_capital
+var float max_drawdown_percent = 0.0
+
+// ==================== INDICATOR CALCULATIONS ====================
+// EMA
+ema_fast = ta.ema(close, input_ema_fast)
+ema_slow = ta.ema(close, input_ema_slow)
+ema_extra_slow = ta.ema(close, input_ema_extra_slow)
+
+// RSI
+rsi = ta.rsi(close, input_rsi_period)
+
+// MACD
+[macd_line, signal_line, histogram] = ta.macd(close, 12, 26, 9)
+
+// SuperTrend
+[supertrend, supertrend_dir] = f_supertrend(high, low, close, 10, input_atr_multiple)
+
+// ATR
+atr_val = ta.atr(input_atr_period)
+
+// VWAP
+vwap_val = ta.vwap(hlc3)
+
+// ==================== TREND ANALYSIS ====================
+trend_direction = f_trend_filter(ema_fast, ema_slow, ema_extra_slow)
+trend_strength = f_trend_strength(ema_fast, ema_slow, atr_val)
+ema_aligned_up = f_ema_aligned_up(ema_fast, ema_slow, ema_extra_slow)
+ema_aligned_down = f_ema_aligned_down(ema_fast, ema_slow, ema_extra_slow)
+
+// ==================== MOMENTUM ANALYSIS ====================
+macD_positive = f_macd_above_signal(macd_line, signal_line)
+rsi_overbought = f_rsi_overbought(rsi, input_rsi_overbought)
+rsi_oversold = f_rsi_oversold(rsi, input_rsi_oversold)
+
+// ==================== SMART MONEY DETECTION ====================
+higher_high = ta.highest(high, input_swing_period) == high
+lower_low = ta.lowest(low, input_swing_period) == low
+higher_low = ta.highest(low, input_swing_period - 1) > ta.highest(low[1], input_swing_period - 1)
+lower_high = ta.lowest(high, input_swing_period - 1) < ta.lowest(high[1], input_swing_period - 1)
+
+// BOS Detection
+bos_up = close > ta.highest(high, input_bos_lookback)
+bos_down = close < ta.lowest(low, input_bos_lookback)
+
+// ==================== INSTITUTIONAL ZONES ====================
+// Order Blocks
+ob_bullish = f_detect_ob_bullish(open, close, low, input_ob_period)
+ob_bearish = f_detect_ob_bearish(open, close, high, input_ob_period)
+
+// FVG
+fvg_bullish = f_detect_fvg_bullish(high, low)
+fvg_bearish = f_detect_fvg_bearish(high, low)
+
+// ==================== AI SCORING ====================
+trend_score = f_score_trend_alignment(trend_direction == 1, ema_aligned_up, atr_val > ta.sma(atr_val, 20))
+momentum_score = f_score_momentum(rsi, macD_positive, histogram > histogram[1])
+institutional_score = f_score_institutional(ob_bullish or ob_bearish, fvg_bullish or fvg_bearish, 5.0)
+smart_money_score = f_score_smart_money(bos_up or bos_down, higher_high or lower_low, true)
+
+ai_score = f_calculate_ai_score(trend_score, momentum_score, institutional_score, smart_money_score)
+ai_confidence = f_calculate_confidence(ai_score, 0.8, 5)
+
+// ==================== FILTER CONDITIONS ====================
+session_valid = not input_session_enabled or f_session_filter_enabled()
+trend_aligned = trend_direction != 0
+volume_valid = f_volume_supports_move(volume, ta.sma(volume, 20), 1.0)
+
+// ==================== ENTRY CONDITIONS ====================
+buy_condition = session_valid and trend_aligned and trend_direction == 1 and 
+                ema_aligned_up and (bos_up or ob_bullish) and 
+                ai_score >= input_ai_min_score and macD_positive
+
+sell_condition = session_valid and trend_aligned and trend_direction == -1 and 
+                 ema_aligned_down and (bos_down or ob_bearish) and 
+                 ai_score <= (100 - input_ai_min_score) and not macD_positive
+
+// ==================== POSITION MANAGEMENT ====================
+if buy_condition
+    entry_price = close
+    stop_loss = f_fixed_stop_loss(entry_price, 1, input_fixed_sl_pips)
+    
+    tp_levels = array.new<float>()
+    array.push(tp_levels, f_tp_risk_reward(entry_price, stop_loss, 1, 1.0))
+    array.push(tp_levels, f_tp_risk_reward(entry_price, stop_loss, 1, 2.0))
+    array.push(tp_levels, f_tp_risk_reward(entry_price, stop_loss, 1, 3.0))
+    
+    if input_buy_alert
+        alert_msg = f_generate_buy_alert(ai_score, entry_price, stop_loss, array.get(tp_levels, 0))
+        f_send_buy_alert(true, alert_msg, input_webhook_url != "", input_webhook_url)
+
+if sell_condition
+    entry_price = close
+    stop_loss = f_fixed_stop_loss(entry_price, -1, input_fixed_sl_pips)
+    
+    tp_levels = array.new<float>()
+    array.push(tp_levels, f_tp_risk_reward(entry_price, stop_loss, -1, 1.0))
+    array.push(tp_levels, f_tp_risk_reward(entry_price, stop_loss, -1, 2.0))
+    array.push(tp_levels, f_tp_risk_reward(entry_price, stop_loss, -1, 3.0))
+    
+    if input_sell_alert
+        alert_msg = f_generate_sell_alert(ai_score, entry_price, close, stop_loss, array.get(tp_levels, 0))
+        f_send_sell_alert(true, alert_msg, input_webhook_url != "", input_webhook_url)
+
+// ==================== VISUALIZATION ====================
+// Plot EMAs
+plot(ema_fast, "EMA Fast", color=color_ema_fast, linewidth=2)
+plot(ema_slow, "EMA Slow", color=color_ema_slow, linewidth=2)
+plot(ema_extra_slow, "EMA Extra Slow", color=color_ema_extra_slow, linewidth=2)
+
+// Plot SuperTrend
+plot(supertrend, "SuperTrend", color=supertrend_dir == 1 ? color_supertrend_up : color_supertrend_down, linewidth=2)
+
+// Plot VWAP
+plot(vwap_val, "VWAP", color=color_accent_cyan, linewidth=1)
+
+// Plot Buy/Sell Signals
+if buy_condition
+    label.new(bar_index, low - atr_val * 0.5, "🟢 BUY", color=color_bull_primary, textcolor=color.white, style=label.style_label_up)
+    
+if sell_condition
+    label.new(bar_index, high + atr_val * 0.5, "🔴 SELL", color=color_bear_primary, textcolor=color.white, style=label.style_label_down)
+
+// ==================== DASHBOARD ====================
+if input_show_dashboard
+    dashboard_text = "GainzAlgo-V2\n" +
+                     "AI Score: " + str.tostring(ai_score, "#.##") + "\n" +
+                     f_trend_indicator_text(trend_direction, trend_strength) + "\n" +
+                     f_session_text() + "\n" +
+                     "RSI: " + str.tostring(rsi, "#.##") + "\n" +
+                     "ATR: " + str.tostring(atr_val / syminfo.mintick, "#.##") + " pips"
+    
+    label.new(bar_index, high, dashboard_text, color=color_background_secondary, 
+             textcolor=color_text_primary, style=label.style_label_down, size=size.small)

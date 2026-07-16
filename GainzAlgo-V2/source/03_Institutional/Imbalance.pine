@@ -1,0 +1,47 @@
+// @version=6
+// GainzAlgo-V2: Imbalance Detection
+// Volume imbalances and market inefficiencies
+
+// ==================== IMBALANCE DETECTION ====================
+f_detect_imbalance_bullish(high, low, prev_high, prev_low) =>
+    // Current bar closes above previous bar high without overlapping
+    current_high = high
+    previous_high = prev_high
+    
+    gap_size = current_high - previous_high
+    gap_size > 0 and low > previous_high
+
+f_detect_imbalance_bearish(high, low, prev_high, prev_low) =>
+    // Current bar closes below previous bar low without overlapping
+    current_low = low
+    previous_low = prev_low
+    
+    gap_size = previous_low - current_low
+    gap_size > 0 and high < previous_low
+
+// ==================== IMBALANCE SIZE ====================
+f_imbalance_size_pips(top, bottom) =>
+    (top - bottom) / syminfo.mintick
+
+f_imbalance_size_percent(top, bottom) =>
+    (top - bottom) / bottom * 100
+
+// ==================== VOLUME IMBALANCE ====================
+f_volume_imbalance_ratio(up_volume, down_volume) =>
+    if down_volume == 0
+        1.0
+    else
+        up_volume / down_volume
+
+f_volume_imbalance_significant(ratio, min_ratio) =>
+    ratio > min_ratio or ratio < (1 / min_ratio)
+
+// ==================== IMBALANCE FILL ====================
+f_imbalance_filled(top, bottom, current_high, current_low) =>
+    current_low <= bottom and current_high >= top
+
+f_partial_fill_percent(top, bottom, fill_price) =>
+    if fill_price > top or fill_price < bottom
+        0.0
+    else
+        ((top - fill_price) / (top - bottom)) * 100

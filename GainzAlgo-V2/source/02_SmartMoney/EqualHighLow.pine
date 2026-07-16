@@ -1,0 +1,33 @@
+// @version=6
+// GainzAlgo-V2: Equal Highs and Lows
+// Smart money price level retest detection
+
+// ==================== EQUAL HIGH DETECTION ====================
+f_detect_equal_high(high, prev_high, tolerance_pips) =>
+    tolerance = tolerance_pips * syminfo.mintick
+    math.abs(high - prev_high) <= tolerance
+
+f_detect_equal_low(low, prev_low, tolerance_pips) =>
+    tolerance = tolerance_pips * syminfo.mintick
+    math.abs(low - prev_low) <= tolerance
+
+// ==================== EQUAL LEVEL SIGNIFICANCE ====================
+f_equal_level_strength(occurrences, bars_apart) =>
+    // More occurrences = stronger level
+    strength = occurrences * 0.2
+    time_factor = 1.0 - (bars_apart / 100.0)
+    strength * math.max(time_factor, 0.5)
+
+// ==================== PRICE AT EQUAL LEVEL ====================
+f_price_retesting_high(close, equal_high_level, tolerance) =>
+    math.abs(close - equal_high_level) <= tolerance * syminfo.mintick
+
+f_price_retesting_low(close, equal_low_level, tolerance) =>
+    math.abs(close - equal_low_level) <= tolerance * syminfo.mintick
+
+// ==================== BREAK OF EQUAL LEVEL ====================
+f_break_above_equal_high(close_prev, close, equal_high_level) =>
+    close_prev <= equal_high_level and close > equal_high_level
+
+f_break_below_equal_low(close_prev, close, equal_low_level) =>
+    close_prev >= equal_low_level and close < equal_low_level

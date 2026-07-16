@@ -1,0 +1,44 @@
+// @version=6
+// GainzAlgo-V2: Breaker Blocks
+// Institutional reversal zone blocks
+
+type BreakerBlock
+    type : string
+    high : float
+    low : float
+    bar_index : int
+    strength : float
+    active : bool
+
+// ==================== BREAKER BLOCK DETECTION ====================
+f_detect_breaker_bullish(open, close, high, low, prev_high) =>
+    // Bearish candle that closes in upper half and breaks previous high
+    is_bearish = close < open
+    closes_in_upper = close > (high + low) / 2
+    breaks_prev_high = high > prev_high
+    
+    is_bearish and closes_in_upper and breaks_prev_high
+
+f_detect_breaker_bearish(open, close, high, low, prev_low) =>
+    // Bullish candle that closes in lower half and breaks previous low
+    is_bullish = close > open
+    closes_in_lower = close < (high + low) / 2
+    breaks_prev_low = low < prev_low
+    
+    is_bullish and closes_in_lower and breaks_prev_low
+
+// ==================== BREAKER BLOCK LEVELS ====================
+f_breaker_level_bullish(open, close) =>
+    math.max(open, close)
+
+f_breaker_level_bearish(open, close) =>
+    math.min(open, close)
+
+// ==================== BREAKER BLOCK MITIGATION ====================
+f_breaker_mitigated(breaker_level, current_price, ob_type) =>
+    if ob_type == "BULLISH"
+        current_price < breaker_level * 0.998
+    else if ob_type == "BEARISH"
+        current_price > breaker_level * 1.002
+    else
+        false
