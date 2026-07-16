@@ -1,0 +1,48 @@
+// @version=6
+// GainzAlgo-V2: MACD (Moving Average Convergence Divergence)
+// Momentum and trend confirmation
+
+// ==================== MACD CALCULATION ====================
+f_macd(source, fast_period, slow_period, signal_period) =>
+    [macd_line, signal_line, histogram] = ta.macd(source, fast_period, slow_period, signal_period)
+    [macd_line, signal_line, histogram]
+
+// ==================== MACD LINE DIRECTION ====================
+f_macd_above_signal(macd_line, signal_line) =>
+    macd_line > signal_line
+
+f_macd_below_signal(macd_line, signal_line) =>
+    macd_line < signal_line
+
+// ==================== MACD HISTOGRAM ====================
+f_macd_histogram_positive(histogram) =>
+    histogram > 0
+
+f_macd_histogram_negative(histogram) =>
+    histogram < 0
+
+f_macd_histogram_expanding(hist_current, hist_prev) =>
+    math.abs(hist_current) > math.abs(hist_prev)
+
+f_macd_histogram_contracting(hist_current, hist_prev) =>
+    math.abs(hist_current) < math.abs(hist_prev)
+
+// ==================== MACD CROSSOVERS ====================
+f_macd_bullish_crossover(macd_prev, signal_prev, macd_current, signal_current) =>
+    macd_prev <= signal_prev and macd_current > signal_current
+
+f_macd_bearish_crossover(macd_prev, signal_prev, macd_current, signal_current) =>
+    macd_prev >= signal_prev and macd_current < signal_current
+
+// ==================== MACD CENTERLINE ====================
+f_macd_above_zero(macd_line) =>
+    macd_line > 0
+
+f_macd_below_zero(macd_line) =>
+    macd_line < 0
+
+f_macd_crossed_above_zero(macd_prev, macd_current) =>
+    macd_prev <= 0 and macd_current > 0
+
+f_macd_crossed_below_zero(macd_prev, macd_current) =>
+    macd_prev >= 0 and macd_current < 0

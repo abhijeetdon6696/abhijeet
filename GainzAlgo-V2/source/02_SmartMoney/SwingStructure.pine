@@ -1,0 +1,51 @@
+// @version=6
+// GainzAlgo-V2: Swing Structure
+// Track highs, lows, and structure patterns
+
+type SwingLevel
+    level_type : string
+    price : float
+    bar_index : int
+    confirmed : bool
+
+// ==================== SWING DETECTION ====================
+f_detect_hh(high, period) =>
+    ta.highest(high, period) == high
+
+f_detect_ll(low, period) =>
+    ta.lowest(low, period) == low
+
+f_detect_hl(low, period) =>
+    local_low = ta.lowest(low, period)
+    local_low > local_low[period] if bar_index > period else false
+
+f_detect_lh(high, period) =>
+    local_high = ta.highest(high, period)
+    local_high < local_high[period] if bar_index > period else false
+
+// ==================== STRUCTURE TYPES ====================
+f_structure_type(hh, ll, hl, lh) =>
+    if hh
+        "HH"
+    else if ll
+        "LL"
+    else if hl
+        "HL"
+    else if lh
+        "LH"
+    else
+        "NONE"
+
+// ==================== TREND STRUCTURE ====================
+f_structure_trending_up(prev_hh, prev_hl, current_hh, current_hl) =>
+    current_hh and current_hl > prev_hl
+
+f_structure_trending_down(prev_ll, prev_lh, current_ll, current_lh) =>
+    current_ll and current_lh < prev_lh
+
+// ==================== STRUCTURE BREAKS ====================
+f_structure_broken_up(current_high, prev_swing_high) =>
+    current_high > prev_swing_high
+
+f_structure_broken_down(current_low, prev_swing_low) =>
+    current_low < prev_swing_low

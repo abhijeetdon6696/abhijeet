@@ -1,0 +1,52 @@
+// @version=6
+// GainzAlgo-V2: BOS (Break of Structure)
+// Smart money structure analysis
+
+type BOSData
+    type : int
+    level : float
+    bar_index : int
+    confirmed : bool
+
+// ==================== BOS DETECTION ====================
+f_detect_bos(high, low, lookback) =>
+    var bos_data = array.new<BOSData>()
+    
+    // Find last swing high and low
+    last_swing_high = ta.highest(high, lookback)
+    last_swing_low = ta.lowest(low, lookback)
+    
+    bos_up = close > last_swing_high
+    bos_down = close < last_swing_low
+    
+    [bos_up, bos_down, last_swing_high, last_swing_low]
+
+// ==================== STRUCTURE TRACKING ====================
+f_track_structure(high, low, period) =>
+    // Track higher highs and lows
+    current_high = high
+    current_low = low
+    
+    prev_high = high[1]
+    prev_low = low[1]
+    
+    higher_high = current_high > prev_high
+    lower_low = current_low < prev_low
+    higher_low = current_low > prev_low
+    lower_high = current_high < prev_high
+    
+    [higher_high, lower_low, higher_low, lower_high]
+
+// ==================== BOS CONFIRMATION ====================
+f_bos_confirmed(bos_level, close, candles_confirmation) =>
+    confirmations = 0
+    for i = 0 to candles_confirmation - 1
+        if close[i] > bos_level
+            confirmations += 1
+    confirmations >= math.ceil(candles_confirmation / 2)
+
+// ==================== BOS STRENGTH ====================
+f_bos_strength(current_price, bos_level, atr_val) =>
+    distance = math.abs(current_price - bos_level)
+    strength = distance / atr_val
+    math.min(strength, 5.0)  // Cap at 5x

@@ -1,0 +1,39 @@
+// @version=6
+// GainzAlgo-V2: VWAP (Volume Weighted Average Price)
+// Institutional price level reference
+
+// ==================== VWAP CALCULATION ====================
+f_vwap() =>
+    ta.vwap(hlc3)
+
+// ==================== VWAP BANDS ====================
+f_vwap_std_dev(source, multiplier) =>
+    vwap_val = ta.vwap(source)
+    std_dev = ta.stdev(source, 20)
+    upper = vwap_val + std_dev * multiplier
+    lower = vwap_val - std_dev * multiplier
+    [vwap_val, upper, lower]
+
+// ==================== PRICE VS VWAP ====================
+f_price_above_vwap(close, vwap) =>
+    close > vwap
+
+f_price_below_vwap(close, vwap) =>
+    close < vwap
+
+f_price_at_vwap(close, vwap, distance) =>
+    math.abs(close - vwap) <= distance * syminfo.mintick
+
+// ==================== VWAP BOUNCES ====================
+f_vwap_bounce_buy(close, open, vwap) =>
+    open < vwap and close > vwap
+
+f_vwap_bounce_sell(close, open, vwap) =>
+    open > vwap and close < vwap
+
+// ==================== VWAP BREAKS ====================
+f_vwap_break_above(close_prev, close, vwap_prev, vwap) =>
+    close_prev <= vwap_prev and close > vwap
+
+f_vwap_break_below(close_prev, close, vwap_prev, vwap) =>
+    close_prev >= vwap_prev and close < vwap

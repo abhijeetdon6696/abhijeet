@@ -1,0 +1,48 @@
+// @version=6
+// GainzAlgo-V2: SuperTrend
+// Trend reversal detection using ATR
+
+// ==================== SUPERTREND CALCULATION ====================
+f_supertrend(high, low, close, period, multiplier) =>
+    hl2 = (high + low) / 2
+    atr_val = ta.atr(period)
+    basic_ub = hl2 + multiplier * atr_val
+    basic_lb = hl2 - multiplier * atr_val
+    
+    final_ub = basic_ub < nz(ta.highest(basic_ub[1], 1), basic_ub) or close[1] > nz(ta.highest(basic_ub[1], 1), basic_ub) ? basic_ub : nz(ta.highest(basic_ub[1], 1), basic_ub)
+    final_lb = basic_lb > nz(ta.lowest(basic_lb[1], 1), basic_lb) or close[1] < nz(ta.lowest(basic_lb[1], 1), basic_lb) ? basic_lb : nz(ta.lowest(basic_lb[1], 1), basic_lb)
+    
+    supertrend = na
+    if na(supertrend[1])
+        supertrend := hl2 > basic_ub ? basic_lb : basic_ub
+    else
+        supertrend := supertrend[1] == nz(ta.highest(basic_ub[1], 1), basic_ub) ? hl2 > final_ub ? final_lb : final_ub : hl2 < final_lb ? final_ub : final_lb
+    
+    direction = na
+    if na(direction[1])
+        direction := hl2 > supertrend ? 1 : -1
+    else
+        direction := supertrend > supertrend[1] ? -1 : supertrend < supertrend[1] ? 1 : direction[1]
+    
+    [supertrend, direction]
+
+// ==================== SUPERTREND SIGNALS ====================
+f_supertrend_uptrend(direction) =>
+    direction == 1
+
+f_supertrend_downtrend(direction) =>
+    direction == -1
+
+// ==================== SUPERTREND SUPPORT/RESISTANCE ====================
+f_supertrend_as_support(close, supertrend, direction) =>
+    f_supertrend_uptrend(direction) and close > supertrend
+
+f_supertrend_as_resistance(close, supertrend, direction) =>
+    f_supertrend_downtrend(direction) and close < supertrend
+
+// ==================== SUPERTREND BREAKS ====================
+f_supertrend_break_up(close_prev, close, supertrend_prev, supertrend) =>
+    close_prev <= supertrend_prev and close > supertrend
+
+f_supertrend_break_down(close_prev, close, supertrend_prev, supertrend) =>
+    close_prev >= supertrend_prev and close < supertrend

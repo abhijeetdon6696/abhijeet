@@ -1,0 +1,51 @@
+// @version=6
+// GainzAlgo-V2: Position Sizing
+// Intelligent position management
+
+// ==================== KELLY CRITERION ====================
+f_kelly_percent(win_rate, avg_win, avg_loss) =>
+    if avg_loss == 0
+        0.0
+    else
+        kelly = (win_rate * avg_win - (1 - win_rate) * avg_loss) / avg_win
+        math.max(kelly, 0.0)
+
+// ==================== FRACTIONAL KELLY ====================
+f_fractional_kelly(kelly_percent, fraction) =>
+    kelly_percent * fraction
+
+// ==================== FIXED POSITION SIZE ====================
+f_fixed_position_size(account_size, risk_percent, entry, sl) =>
+    risk_amount = account_size * (risk_percent / 100)
+    sl_pips = math.abs(entry - sl) / syminfo.mintick
+    position_contracts = risk_amount / (sl_pips * 10)
+    position_contracts
+
+// ==================== VOLATILITY-ADJUSTED SIZE ====================
+f_volatility_adjusted_size(base_size, current_atr, avg_atr) =>
+    if avg_atr == 0
+        base_size
+    else
+        volatility_ratio = avg_atr / current_atr
+        adjusted = base_size * volatility_ratio
+        math.min(adjusted, base_size * 2.0)  // Cap at 2x
+
+// ==================== DRAWDOWN-ADJUSTED SIZE ====================
+f_drawdown_adjusted_size(base_size, current_drawdown, max_drawdown) =>
+    if current_drawdown > max_drawdown
+        0.0
+    else
+        drawdown_ratio = (max_drawdown - current_drawdown) / max_drawdown
+        base_size * drawdown_ratio
+
+// ==================== CONSECUTIVE LOSS ADJUSTMENT ====================
+f_loss_streak_size(base_size, consecutive_losses, max_streak) =>
+    if consecutive_losses >= max_streak
+        0.0
+    else
+        reduction = consecutive_losses / max_streak
+        base_size * (1.0 - reduction * 0.5)  // Reduce by 50% max
+
+// ==================== MAXIMUM POSITION SIZE ====================
+f_max_position_size(account_size, max_risk_percent) =>
+    account_size * (max_risk_percent / 100)

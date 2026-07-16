@@ -1,0 +1,37 @@
+// @version=6
+// GainzAlgo-V2: ATR (Average True Range)
+// Volatility measurement
+
+// ==================== ATR CALCULATION ====================
+f_atr(period) =>
+    ta.atr(period)
+
+// ==================== ATR IN PIPS ====================
+f_atr_in_pips(atr_val) =>
+    atr_val / syminfo.mintick
+
+// ==================== ATR VOLATILITY LEVELS ====================
+f_atr_high_volatility(atr_current, atr_avg, threshold) =>
+    atr_current > atr_avg * threshold
+
+f_atr_low_volatility(atr_current, atr_avg, threshold) =>
+    atr_current < atr_avg / threshold
+
+f_atr_normal_volatility(atr_current, atr_avg) =>
+    atr_current >= atr_avg * 0.8 and atr_current <= atr_avg * 1.2
+
+// ==================== ATR EXPANSION/CONTRACTION ====================
+f_atr_expanding(atr_current, atr_prev) =>
+    atr_current > atr_prev
+
+f_atr_contracting(atr_current, atr_prev) =>
+    atr_current < atr_prev
+
+// ==================== ATR MULTIPLES ====================
+f_atr_multiple(atr_val, multiplier) =>
+    atr_val * multiplier
+
+f_atr_channel(center, atr_val, multiplier) =>
+    upper = center + atr_val * multiplier
+    lower = center - atr_val * multiplier
+    [upper, lower]

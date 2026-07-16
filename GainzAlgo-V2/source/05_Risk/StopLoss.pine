@@ -1,0 +1,50 @@
+// @version=6
+// GainzAlgo-V2: Stop Loss Management
+// Dynamic and fixed stop loss calculations
+
+// ==================== FIXED STOP LOSS ====================
+f_fixed_stop_loss(entry_price, direction, pips) =>
+    sl_distance = pips * syminfo.mintick
+    if direction == 1  // Long
+        entry_price - sl_distance
+    else  // Short
+        entry_price + sl_distance
+
+// ==================== ATR-BASED STOP LOSS ====================
+f_atr_stop_loss(entry_price, direction, atr_val, multiplier) =>
+    sl_distance = atr_val * multiplier
+    if direction == 1  // Long
+        entry_price - sl_distance
+    else  // Short
+        entry_price + sl_distance
+
+// ==================== SWING STOP LOSS ====================
+f_swing_stop_loss(entry_price, direction, recent_swing, buffer_pips) =>
+    buffer = buffer_pips * syminfo.mintick
+    if direction == 1  // Long
+        recent_swing - buffer
+    else  // Short
+        recent_swing + buffer
+
+// ==================== SUPPORT/RESISTANCE STOP LOSS ====================
+f_sr_stop_loss(entry_price, direction, support_resistance) =>
+    if direction == 1  // Long
+        support_resistance - syminfo.mintick * 5
+    else  // Short
+        support_resistance + syminfo.mintick * 5
+
+// ==================== STOP LOSS DISTANCE ====================
+f_sl_distance_pips(entry_price, stop_loss_price) =>
+    math.abs(entry_price - stop_loss_price) / syminfo.mintick
+
+// ==================== RISK CALCULATION ====================
+f_risk_amount(account_size, risk_percent) =>
+    account_size * (risk_percent / 100)
+
+f_position_size(account_size, risk_percent, entry_price, stop_loss, direction) =>
+    risk_amount = f_risk_amount(account_size, risk_percent)
+    sl_distance = f_sl_distance_pips(entry_price, stop_loss)
+    pips_value = 10.0  // Typically $10 per pip for standard lot
+    
+    position_size = risk_amount / (sl_distance * pips_value)
+    position_size

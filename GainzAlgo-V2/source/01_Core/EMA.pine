@@ -1,0 +1,54 @@
+// @version=6
+// GainzAlgo-V2: EMA (Exponential Moving Average)
+// Core trend following indicator
+
+// ==================== EMA CALCULATION ====================
+f_ema(source, period) =>
+    ta.ema(source, period)
+
+// ==================== MULTI EMA ====================
+f_get_ema_fast(close, period) =>
+    f_ema(close, period)
+
+f_get_ema_slow(close, period) =>
+    f_ema(close, period)
+
+f_get_ema_extra_slow(close, period) =>
+    f_ema(close, period)
+
+// ==================== EMA TREND ====================
+f_ema_trending_up(fast_ema, slow_ema) =>
+    fast_ema > slow_ema
+
+f_ema_trending_down(fast_ema, slow_ema) =>
+    fast_ema < slow_ema
+
+// ==================== EMA PULLBACK ====================
+f_ema_pullback_to_slow(close, slow_ema, threshold_pips) =>
+    math.abs(close - slow_ema) <= threshold_pips * syminfo.mintick
+
+// ==================== EMA BOUNCE ====================
+f_ema_bounce_signal(close, open, slow_ema, direction) =>
+    if direction > 0
+        close > slow_ema and open < slow_ema
+    else if direction < 0
+        close < slow_ema and open > slow_ema
+    else
+        false
+
+// ==================== EMA SLOPE ====================
+f_ema_slope(ema_current, ema_prev, period) =>
+    (ema_current - ema_prev) / ema_prev * 100
+
+// ==================== EMA ALIGNMENT ====================
+f_ema_aligned_up(fast, slow, extra_slow) =>
+    fast > slow and slow > extra_slow
+
+f_ema_aligned_down(fast, slow, extra_slow) =>
+    fast < slow and slow < extra_slow
+
+f_ema_price_above_all(close, fast, slow, extra_slow) =>
+    close > fast and fast > slow and slow > extra_slow
+
+f_ema_price_below_all(close, fast, slow, extra_slow) =>
+    close < fast and fast < slow and slow < extra_slow

@@ -1,0 +1,55 @@
+// @version=6
+// GainzAlgo-V2: Order Blocks
+// Institutional accumulation/distribution zones
+
+type OrderBlock
+    type : string
+    high : float
+    low : float
+    bar_index : int
+    strength : float
+    mitigated : bool
+
+// ==================== ORDER BLOCK DETECTION ====================
+f_detect_ob_bullish(open, close, low, period) =>
+    is_bearish_candle = close < open
+    strong_close = close < low + (high - low) * 0.25
+    
+    if is_bearish_candle and strong_close
+        low_level = ta.lowest(low, period)
+        true
+    else
+        false
+
+f_detect_ob_bearish(open, close, high, period) =>
+    is_bullish_candle = close > open
+    strong_close = close > high - (high - low) * 0.25
+    
+    if is_bullish_candle and strong_close
+        high_level = ta.highest(high, period)
+        true
+    else
+        false
+
+// ==================== ORDER BLOCK LEVELS ====================
+f_ob_level_bullish(open, close, low) =>
+    math.min(open, close)
+
+f_ob_level_bearish(open, close, high) =>
+    math.max(open, close)
+
+// ==================== ORDER BLOCK MITIGATION ====================
+f_ob_mitigated(ob_price, current_price, ob_type) =>
+    if ob_type == "BULLISH"
+        current_price < ob_price * 0.995  // 0.5% below
+    else if ob_type == "BEARISH"
+        current_price > ob_price * 1.005  // 0.5% above
+    else
+        false
+
+// ==================== ORDER BLOCK STRENGTH ====================
+f_ob_strength(ob_high, ob_low, current_price, atr_val) =>
+    size = ob_high - ob_low
+    distance_from_ob = math.abs(current_price - (ob_high + ob_low) / 2)
+    strength = size / atr_val
+    math.min(strength, 10.0)

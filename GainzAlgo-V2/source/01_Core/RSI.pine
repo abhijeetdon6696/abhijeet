@@ -1,0 +1,51 @@
+// @version=6
+// GainzAlgo-V2: RSI (Relative Strength Index)
+// Momentum and overbought/oversold detection
+
+// ==================== RSI CALCULATION ====================
+f_rsi(source, period) =>
+    ta.rsi(source, period)
+
+// ==================== RSI LEVELS ====================
+f_rsi_overbought(rsi, threshold) =>
+    rsi > threshold
+
+f_rsi_oversold(rsi, threshold) =>
+    rsi < threshold
+
+f_rsi_neutral(rsi) =>
+    rsi >= 45 and rsi <= 55
+
+// ==================== RSI DIVERGENCE ====================
+f_rsi_bullish_divergence(price_low, price_prev_low, rsi_low, rsi_prev_low) =>
+    price_low > price_prev_low and rsi_low < rsi_prev_low
+
+f_rsi_bearish_divergence(price_high, price_prev_high, rsi_high, rsi_prev_high) =>
+    price_high < price_prev_high and rsi_high > rsi_prev_high
+
+// ==================== RSI EXTREMES ====================
+f_rsi_extreme_up(rsi) =>
+    rsi > 80
+
+f_rsi_extreme_down(rsi) =>
+    rsi < 20
+
+// ==================== RSI MOMENTUM ====================
+f_rsi_momentum_up(rsi_current, rsi_prev) =>
+    rsi_current > rsi_prev
+
+f_rsi_momentum_down(rsi_current, rsi_prev) =>
+    rsi_current < rsi_prev
+
+// ==================== RSI CENTERLINE ====================
+f_rsi_above_centerline(rsi) =>
+    rsi > 50
+
+f_rsi_below_centerline(rsi) =>
+    rsi < 50
+
+f_rsi_crossed_above_centerline(rsi_prev, rsi_current) =>
+    rsi_prev <= 50 and rsi_current > 50
+
+f_rsi_crossed_below_centerline(rsi_prev, rsi_current) =>
+    rsi_prev >= 50 and rsi_current < 50

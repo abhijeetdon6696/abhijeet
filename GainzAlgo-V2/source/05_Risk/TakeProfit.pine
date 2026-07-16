@@ -1,0 +1,58 @@
+// @version=6
+// GainzAlgo-V2: Take Profit Management
+// Multi-level profit taking strategy
+
+// ==================== SIMPLE TAKE PROFIT ====================
+f_take_profit(entry_price, direction, profit_pips) =>
+    tp_distance = profit_pips * syminfo.mintick
+    if direction == 1  // Long
+        entry_price + tp_distance
+    else  // Short
+        entry_price - tp_distance
+
+// ==================== RISK/REWARD TAKE PROFIT ====================
+f_tp_risk_reward(entry_price, stop_loss, direction, rr_ratio) =>
+    risk_distance = math.abs(entry_price - stop_loss)
+    profit_distance = risk_distance * rr_ratio
+    
+    if direction == 1  // Long
+        entry_price + profit_distance
+    else  // Short
+        entry_price - profit_distance
+
+// ==================== MULTI-LEVEL TAKE PROFIT ====================
+f_multi_tp(entry_price, stop_loss, direction, tp_levels) =>
+    risk = math.abs(entry_price - stop_loss)
+    
+    tp1 = f_tp_risk_reward(entry_price, stop_loss, direction, tp_levels.get(0))
+    tp2 = f_tp_risk_reward(entry_price, stop_loss, direction, tp_levels.get(1))
+    tp3 = f_tp_risk_reward(entry_price, stop_loss, direction, tp_levels.get(2))
+    
+    [tp1, tp2, tp3]
+
+// ==================== PARTIAL PROFIT TAKING ====================
+f_partial_exit_size(total_size, exit_percent) =>
+    total_size * (exit_percent / 100)
+
+// ==================== SCALE OUT LEVELS ====================
+f_scale_out(entry_price, stop_loss, direction) =>
+    tp1 = f_tp_risk_reward(entry_price, stop_loss, direction, 1.0)
+    tp2 = f_tp_risk_reward(entry_price, stop_loss, direction, 2.0)
+    tp3 = f_tp_risk_reward(entry_price, stop_loss, direction, 3.0)
+    
+    exit1_size = 0.25  // Exit 25% at TP1
+    exit2_size = 0.50  // Exit 50% at TP2
+    exit3_size = 0.25  // Exit 25% at TP3
+    
+    [[tp1, tp2, tp3], [exit1_size, exit2_size, exit3_size]]
+
+// ==================== PROFIT TRACKING ====================
+f_current_profit_pips(entry_price, current_price, direction) =>
+    if direction == 1
+        (current_price - entry_price) / syminfo.mintick
+    else
+        (entry_price - current_price) / syminfo.mintick
+
+f_profit_percent(entry_price, current_price, direction) =>
+    pips = f_current_profit_pips(entry_price, current_price, direction)
+    (pips / math.abs(entry_price / syminfo.mintick)) * 100

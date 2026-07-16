@@ -1,0 +1,40 @@
+// @version=6
+// GainzAlgo-V2: FVG (Fair Value Gap)
+// Institutional price imbalances
+
+type FVG
+    type : string
+    top : float
+    bottom : float
+    bar_index : int
+    filled : bool
+    size_pips : float
+
+// ==================== FVG DETECTION ====================
+f_detect_fvg_bullish(high, low) =>
+    // Current bar closes above previous bar high with gap
+    current_low > high[1] and close > high[1]
+
+f_detect_fvg_bearish(high, low) =>
+    // Current bar closes below previous bar low with gap
+    current_high < low[1] and close < low[1]
+
+// ==================== FVG SIZE ====================
+f_fvg_size(top, bottom) =>
+    (top - bottom) / syminfo.mintick
+
+f_fvg_size_percent(top, bottom) =>
+    (top - bottom) / bottom * 100
+
+// ==================== FVG FILLED ====================
+f_fvg_filled_bullish(top, bottom, low) =>
+    low <= bottom
+
+f_fvg_filled_bearish(top, bottom, high) =>
+    high >= top
+
+// ==================== FVG SIGNIFICANCE ====================
+f_fvg_significant(fvg_size, atr_val, min_multiplier) =>
+    fvg_pips = fvg_size / syminfo.mintick
+    atr_pips = atr_val / syminfo.mintick
+    fvg_pips >= atr_pips * min_multiplier

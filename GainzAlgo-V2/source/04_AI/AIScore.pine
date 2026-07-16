@@ -1,0 +1,74 @@
+// @version=6
+// GainzAlgo-V2: AI Scoring System
+// Machine learning-based trade quality assessment
+
+type AISignal
+    score : float
+    confidence : float
+    direction : int
+    factors : array<float>
+    timestamp : int
+
+// ==================== SCORE COMPONENTS ====================
+f_score_trend_alignment(ema_up, ema_aligned, atr_healthy) =>
+    score = 0.0
+    if ema_aligned
+        score += 30.0
+    if ema_up
+        score += 20.0
+    if atr_healthy
+        score += 15.0
+    score
+
+f_score_momentum(rsi, macd_positive, histogram_expanding) =>
+    score = 0.0
+    rsi_score = math.abs(rsi - 50) / 50 * 20  // 0-20 points
+    if macd_positive
+        score += 15.0
+    if histogram_expanding
+        score += 15.0
+    score + rsi_score
+
+f_score_institutional(ob_present, fvg_present, order_block_strength) =>
+    score = 0.0
+    if ob_present
+        score += order_block_strength * 5  // 0-20 points
+    if fvg_present
+        score += 10.0
+    score
+
+f_score_smart_money(bos_confirmed, structure_intact, liquidity_present) =>
+    score = 0.0
+    if bos_confirmed
+        score += 20.0
+    if structure_intact
+        score += 15.0
+    if liquidity_present
+        score += 10.0
+    score
+
+// ==================== TOTAL AI SCORE ====================
+f_calculate_ai_score(trend_score, momentum_score, institutional_score, smart_money_score) =>
+    total = trend_score + momentum_score + institutional_score + smart_money_score
+    math.min(total, 100.0)
+
+// ==================== CONFIDENCE CALCULATION ====================
+f_calculate_confidence(ai_score, factor_alignment, recent_wins) =>
+    base_confidence = ai_score / 100.0
+    alignment_bonus = factor_alignment * 0.1
+    win_bonus = math.min(recent_wins / 10.0 * 0.1, 0.1)
+    confidence = base_confidence + alignment_bonus + win_bonus
+    math.min(confidence, 1.0)
+
+// ==================== SIGNAL DIRECTION ====================
+f_ai_direction(trend_direction, momentum_direction, ob_direction) =>
+    if trend_direction == 1 and momentum_direction == 1 and ob_direction == 1
+        1  // Strong BUY
+    else if trend_direction == -1 and momentum_direction == -1 and ob_direction == -1
+        -1  // Strong SELL
+    else if trend_direction == 1 or momentum_direction == 1
+        1  // Weak BUY
+    else if trend_direction == -1 or momentum_direction == -1
+        -1  // Weak SELL
+    else
+        0  // Neutral
